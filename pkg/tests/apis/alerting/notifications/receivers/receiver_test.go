@@ -9,11 +9,15 @@ import (
 	"net/http"
 	"path"
 	"slices"
-	"sort"
 	"strings"
 	"testing"
 
+	"github.com/grafana/alerting/notify/notifytest"
+	"github.com/grafana/alerting/receivers/email"
+	"github.com/grafana/alerting/receivers/line"
 	"github.com/grafana/alerting/receivers/schema"
+	"github.com/grafana/alerting/receivers/sns"
+	"github.com/grafana/alerting/receivers/webhook"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -653,7 +657,7 @@ func TestIntegrationAccessControl(t *testing.T) {
 			}
 
 			updatedExpected := expected.Copy().(*v0alpha1.Receiver)
-			updatedExpected.Spec.Integrations = append(updatedExpected.Spec.Integrations, createIntegration(t, "email"))
+			updatedExpected.Spec.Integrations = append(updatedExpected.Spec.Integrations, createIntegration(t, email.Type))
 
 			d, err = json.Marshal(updatedExpected)
 			require.NoError(t, err)
@@ -870,7 +874,7 @@ func TestIntegrationProvisioning(t *testing.T) {
 		Spec: v0alpha1.ReceiverSpec{
 			Title: "test-receiver-1",
 			Integrations: []v0alpha1.ReceiverIntegration{
-				createIntegration(t, "email"),
+				createIntegration(t, email.Type),
 			},
 		},
 	}, v1.CreateOptions{})
@@ -891,7 +895,7 @@ func TestIntegrationProvisioning(t *testing.T) {
 		got, err := adminClient.Get(ctx, created.Name, v1.GetOptions{})
 		require.NoError(t, err)
 		updated := got.Copy().(*v0alpha1.Receiver)
-		updated.Spec.Integrations = append(updated.Spec.Integrations, createIntegration(t, "email"))
+		updated.Spec.Integrations = append(updated.Spec.Integrations, createIntegration(t, email.Type))
 
 		_, err = adminClient.Update(ctx, updated, v1.UpdateOptions{})
 		require.Truef(t, errors.IsForbidden(err), "should get Forbidden error but got %s", err)
@@ -933,7 +937,7 @@ func TestIntegrationOptimisticConcurrency(t *testing.T) {
 	})
 	t.Run("should update if version matches", func(t *testing.T) {
 		updated := created.Copy().(*v0alpha1.Receiver)
-		updated.Spec.Integrations = append(updated.Spec.Integrations, createIntegration(t, "email"))
+		updated.Spec.Integrations = append(updated.Spec.Integrations, createIntegration(t, email.Type))
 		actualUpdated, err := adminClient.Update(ctx, updated, v1.UpdateOptions{})
 		require.NoError(t, err)
 		for i, integration := range actualUpdated.Spec.Integrations {
@@ -945,7 +949,7 @@ func TestIntegrationOptimisticConcurrency(t *testing.T) {
 	t.Run("should fail to update if version is empty", func(t *testing.T) {
 		updated := created.Copy().(*v0alpha1.Receiver)
 		updated.ResourceVersion = ""
-		updated.Spec.Integrations = append(updated.Spec.Integrations, createIntegration(t, "webhook"))
+		updated.Spec.Integrations = append(updated.Spec.Integrations, createIntegration(t, webhook.Type))
 		_, err := adminClient.Update(ctx, updated, v1.UpdateOptions{})
 		require.Truef(t, errors.IsConflict(err), "should get Forbidden error but got %s", err) // TODO Change that? K8s returns 400 instead.
 	})
@@ -998,9 +1002,9 @@ func TestIntegrationPatch(t *testing.T) {
 		Spec: v0alpha1.ReceiverSpec{
 			Title: "receiver",
 			Integrations: []v0alpha1.ReceiverIntegration{
-				createIntegration(t, "email"),
-				createIntegration(t, "webhook"),
-				createIntegration(t, "sns"),
+				createIntegration(t, email.Type),
+				createIntegration(t, webhook.Type),
+				createIntegration(t, sns.Type),
 			},
 		},
 	}
@@ -1225,7 +1229,7 @@ func TestIntegrationCRUD(t *testing.T) {
 	t.Run("should be able to update default receiver", func(t *testing.T) {
 		require.NotNil(t, defaultReceiver)
 		newDefault := defaultReceiver.Copy().(*v0alpha1.Receiver)
-		newDefault.Spec.Integrations = append(newDefault.Spec.Integrations, createIntegration(t, "line"))
+		newDefault.Spec.Integrations = append(newDefault.Spec.Integrations, createIntegration(t, line.Type))
 
 		updatedReceiver, err := adminClient.Update(ctx, newDefault, v1.UpdateOptions{})
 		require.NoError(t, err)
@@ -1269,7 +1273,7 @@ func TestIntegrationCRUD(t *testing.T) {
 		integrations := make([]v0alpha1.ReceiverIntegration, 0, len(notifytest.AllKnownV1ConfigsForTesting))
 		keysIter := maps.Keys(notifytest.AllKnownV1ConfigsForTesting)
 		keys := slices.Collect(keysIter)
-		sort.Strings(keys)
+		slices.Sort(keys)
 		for _, key := range keys {
 			integrations = append(integrations, createIntegration(t, key))
 		}
@@ -1300,7 +1304,7 @@ func TestIntegrationCRUD(t *testing.T) {
 
 		export := legacyCli.ExportReceiverTyped(t, receiver.Spec.Title, true)
 		for _, integration := range export.Receivers {
-			expected := notifytest.AllKnownV1ConfigsForTesting[strings.ToLower(integration.Type)] // to lower because there is LINE that is in different casing in API
+			expected := notifytest.AllKnownV1ConfigsForTesting[schema.IntegrationType(strings.ToLower(integration.Type))] // to lower because there is LINE that is in different casing in API
 			assert.JSONEqf(t, expected.Config, string(integration.Settings), "integration %s", integration.Type)
 		}
 	})
@@ -1313,7 +1317,7 @@ func TestIntegrationCRUD(t *testing.T) {
 			for _, integration := range get.Spec.Integrations {
 				integrationType := schema.IntegrationType(integration.Type)
 				t.Run(integration.Type, func(t *testing.T) {
-					expected := notifytest.AllKnownV1ConfigsForTesting[strings.ToLower(integration.Type)]
+					expected := notifytest.AllKnownV1ConfigsForTesting[schema.IntegrationType(strings.ToLower(integration.Type))]
 					var fields map[string]any
 					require.NoError(t, json.Unmarshal([]byte(expected.Config), &fields))
 					typeSchema, ok := notify.GetSchemaVersionForIntegration(integrationType, schema.V1)
@@ -1338,9 +1342,9 @@ func TestIntegrationCRUD(t *testing.T) {
 	t.Run("should fail to persist receiver with invalid config", func(t *testing.T) {
 		keysIter := maps.Keys(notifytest.AllKnownV1ConfigsForTesting)
 		keys := slices.Collect(keysIter)
-		sort.Strings(keys)
+		slices.Sort(keys)
 		for _, key := range keys {
-			t.Run(key, func(t *testing.T) {
+			t.Run(string(key), func(t *testing.T) {
 				integration := createIntegration(t, key)
 				// Make the integration invalid, so it fails to create. This is usually done by sending empty settings.
 				clear(integration.Settings)
@@ -1379,7 +1383,7 @@ func TestIntegrationReceiverListSelector(t *testing.T) {
 		Spec: v0alpha1.ReceiverSpec{
 			Title: "test-receiver-1",
 			Integrations: []v0alpha1.ReceiverIntegration{
-				createIntegration(t, "email"),
+				createIntegration(t, email.Type),
 			},
 		},
 	}
@@ -1393,7 +1397,7 @@ func TestIntegrationReceiverListSelector(t *testing.T) {
 		Spec: v0alpha1.ReceiverSpec{
 			Title: "test-receiver-2",
 			Integrations: []v0alpha1.ReceiverIntegration{
-				createIntegration(t, "email"),
+				createIntegration(t, email.Type),
 			},
 		},
 	}
@@ -1503,18 +1507,18 @@ func persistInitialConfig(t *testing.T, amConfig definitions.PostableUserConfig)
 	require.NoError(t, err)
 }
 
-func createIntegration(t *testing.T, integrationType string) v0alpha1.ReceiverIntegration {
+func createIntegration(t *testing.T, integrationType schema.IntegrationType) v0alpha1.ReceiverIntegration {
 	cfg, ok := notifytest.AllKnownV1ConfigsForTesting[integrationType]
 	require.Truef(t, ok, "no known config for integration type %s", integrationType)
-	return createIntegrationWithSettings(t, integrationType, "v1", cfg.Config)
+	return createIntegrationWithSettings(t, integrationType, schema.V1, cfg.Config)
 }
-func createIntegrationWithSettings(t *testing.T, integrationType string, integrationVersion string, settingsJson string) v0alpha1.ReceiverIntegration {
+func createIntegrationWithSettings(t *testing.T, integrationType schema.IntegrationType, integrationVersion schema.Version, settingsJson string) v0alpha1.ReceiverIntegration {
 	settings := common.Unstructured{}
 	require.NoError(t, settings.UnmarshalJSON([]byte(settingsJson)))
 	return v0alpha1.ReceiverIntegration{
 		Settings:              settings.Object,
-		Type:                  integrationType,
-		Version:               integrationVersion,
+		Type:                  string(integrationType),
+		Version:               string(integrationVersion),
 		DisableResolveMessage: util.Pointer(false),
 	}
 }
