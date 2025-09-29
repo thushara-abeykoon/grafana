@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	alertingmodels "github.com/grafana/alerting/models"
 	"github.com/grafana/alerting/notify"
 	receiversTesting "github.com/grafana/alerting/receivers/testing"
 	"github.com/stretchr/testify/require"
@@ -54,11 +55,11 @@ func TestContactPointFromContactPointExports(t *testing.T) {
 
 	// use the configs for testing because they have all fields supported by integrations
 	for integrationType, cfg := range notifytest.AllKnownV1ConfigsForTesting {
-		t.Run(integrationType, func(t *testing.T) {
+		t.Run(string(integrationType), func(t *testing.T) {
 			recCfg := &notify.APIReceiver{
 				ConfigReceiver: notify.ConfigReceiver{Name: "test-receiver"},
-				GrafanaIntegrations: notify.GrafanaIntegrations{
-					Integrations: []*notify.GrafanaIntegrationConfig{
+				ReceiverConfig: alertingmodels.ReceiverConfig{
+					Integrations: []*alertingmodels.IntegrationConfig{
 						cfg.GetRawNotifierConfig("test"),
 					},
 				},
