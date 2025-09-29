@@ -10,6 +10,30 @@ import (
 	alertingModels "github.com/grafana/alerting/models"
 	"github.com/grafana/alerting/notify"
 	"github.com/grafana/alerting/receivers"
+	"github.com/grafana/alerting/receivers/alertmanager"
+	"github.com/grafana/alerting/receivers/dingding"
+	"github.com/grafana/alerting/receivers/discord"
+	"github.com/grafana/alerting/receivers/email"
+	"github.com/grafana/alerting/receivers/googlechat"
+	"github.com/grafana/alerting/receivers/jira"
+	"github.com/grafana/alerting/receivers/kafka"
+	"github.com/grafana/alerting/receivers/line"
+	"github.com/grafana/alerting/receivers/mqtt"
+	"github.com/grafana/alerting/receivers/oncall"
+	"github.com/grafana/alerting/receivers/opsgenie"
+	"github.com/grafana/alerting/receivers/pagerduty"
+	"github.com/grafana/alerting/receivers/pushover"
+	"github.com/grafana/alerting/receivers/schema"
+	"github.com/grafana/alerting/receivers/sensugo"
+	"github.com/grafana/alerting/receivers/slack"
+	"github.com/grafana/alerting/receivers/sns"
+	"github.com/grafana/alerting/receivers/teams"
+	"github.com/grafana/alerting/receivers/telegram"
+	"github.com/grafana/alerting/receivers/threema"
+	"github.com/grafana/alerting/receivers/victorops"
+	"github.com/grafana/alerting/receivers/webex"
+	"github.com/grafana/alerting/receivers/webhook"
+	"github.com/grafana/alerting/receivers/wecom"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/modern-go/reflect2"
 
@@ -58,161 +82,161 @@ func ContactPointToContactPointExport(cp definitions.ContactPoint) (notify.APIRe
 
 	var errs []error
 	for _, i := range cp.Alertmanager {
-		el, err := marshallIntegration(j, "prometheus-alertmanager", i, i.DisableResolveMessage)
+		el, err := marshallIntegration(j, alertmanager.Type, i, i.DisableResolveMessage)
 		if err != nil {
 			errs = append(errs, err)
 		}
 		integration = append(integration, el)
 	}
 	for _, i := range cp.Dingding {
-		el, err := marshallIntegration(j, "dingding", i, i.DisableResolveMessage)
+		el, err := marshallIntegration(j, dingding.Type, i, i.DisableResolveMessage)
 		if err != nil {
 			errs = append(errs, err)
 		}
 		integration = append(integration, el)
 	}
 	for _, i := range cp.Discord {
-		el, err := marshallIntegration(j, "discord", i, i.DisableResolveMessage)
+		el, err := marshallIntegration(j, discord.Type, i, i.DisableResolveMessage)
 		if err != nil {
 			errs = append(errs, err)
 		}
 		integration = append(integration, el)
 	}
 	for _, i := range cp.Email {
-		el, err := marshallIntegration(j, "email", i, i.DisableResolveMessage)
+		el, err := marshallIntegration(j, email.Type, i, i.DisableResolveMessage)
 		if err != nil {
 			errs = append(errs, err)
 		}
 		integration = append(integration, el)
 	}
 	for _, i := range cp.Googlechat {
-		el, err := marshallIntegration(j, "googlechat", i, i.DisableResolveMessage)
+		el, err := marshallIntegration(j, googlechat.Type, i, i.DisableResolveMessage)
 		if err != nil {
 			errs = append(errs, err)
 		}
 		integration = append(integration, el)
 	}
 	for _, i := range cp.Jira {
-		el, err := marshallIntegration(j, "jira", i, i.DisableResolveMessage)
+		el, err := marshallIntegration(j, jira.Type, i, i.DisableResolveMessage)
 		if err != nil {
 			errs = append(errs, err)
 		}
 		integration = append(integration, el)
 	}
 	for _, i := range cp.Kafka {
-		el, err := marshallIntegration(j, "kafka", i, i.DisableResolveMessage)
+		el, err := marshallIntegration(j, kafka.Type, i, i.DisableResolveMessage)
 		if err != nil {
 			errs = append(errs, err)
 		}
 		integration = append(integration, el)
 	}
 	for _, i := range cp.Line {
-		el, err := marshallIntegration(j, "line", i, i.DisableResolveMessage)
+		el, err := marshallIntegration(j, line.Type, i, i.DisableResolveMessage)
 		if err != nil {
 			errs = append(errs, err)
 		}
 		integration = append(integration, el)
 	}
 	for _, i := range cp.Mqtt {
-		el, err := marshallIntegration(j, "mqtt", i, i.DisableResolveMessage)
+		el, err := marshallIntegration(j, mqtt.Type, i, i.DisableResolveMessage)
 		if err != nil {
 			errs = append(errs, err)
 		}
 		integration = append(integration, el)
 	}
 	for _, i := range cp.Opsgenie {
-		el, err := marshallIntegration(j, "opsgenie", i, i.DisableResolveMessage)
+		el, err := marshallIntegration(j, opsgenie.Type, i, i.DisableResolveMessage)
 		if err != nil {
 			errs = append(errs, err)
 		}
 		integration = append(integration, el)
 	}
 	for _, i := range cp.Pagerduty {
-		el, err := marshallIntegration(j, "pagerduty", i, i.DisableResolveMessage)
+		el, err := marshallIntegration(j, pagerduty.Type, i, i.DisableResolveMessage)
 		if err != nil {
 			errs = append(errs, err)
 		}
 		integration = append(integration, el)
 	}
 	for _, i := range cp.OnCall {
-		el, err := marshallIntegration(j, "oncall", i, i.DisableResolveMessage)
+		el, err := marshallIntegration(j, oncall.Type, i, i.DisableResolveMessage)
 		if err != nil {
 			errs = append(errs, err)
 		}
 		integration = append(integration, el)
 	}
 	for _, i := range cp.Pushover {
-		el, err := marshallIntegration(j, "pushover", i, i.DisableResolveMessage)
+		el, err := marshallIntegration(j, pushover.Type, i, i.DisableResolveMessage)
 		if err != nil {
 			errs = append(errs, err)
 		}
 		integration = append(integration, el)
 	}
 	for _, i := range cp.Sensugo {
-		el, err := marshallIntegration(j, "sensugo", i, i.DisableResolveMessage)
+		el, err := marshallIntegration(j, sensugo.Type, i, i.DisableResolveMessage)
 		if err != nil {
 			errs = append(errs, err)
 		}
 		integration = append(integration, el)
 	}
 	for _, i := range cp.Sns {
-		el, err := marshallIntegration(j, "sns", i, i.DisableResolveMessage)
+		el, err := marshallIntegration(j, sns.Type, i, i.DisableResolveMessage)
 		if err != nil {
 			errs = append(errs, err)
 		}
 		integration = append(integration, el)
 	}
 	for _, i := range cp.Slack {
-		el, err := marshallIntegration(j, "slack", i, i.DisableResolveMessage)
+		el, err := marshallIntegration(j, slack.Type, i, i.DisableResolveMessage)
 		if err != nil {
 			errs = append(errs, err)
 		}
 		integration = append(integration, el)
 	}
 	for _, i := range cp.Teams {
-		el, err := marshallIntegration(j, "teams", i, i.DisableResolveMessage)
+		el, err := marshallIntegration(j, teams.Type, i, i.DisableResolveMessage)
 		if err != nil {
 			errs = append(errs, err)
 		}
 		integration = append(integration, el)
 	}
 	for _, i := range cp.Telegram {
-		el, err := marshallIntegration(j, "telegram", i, i.DisableResolveMessage)
+		el, err := marshallIntegration(j, telegram.Type, i, i.DisableResolveMessage)
 		if err != nil {
 			errs = append(errs, err)
 		}
 		integration = append(integration, el)
 	}
 	for _, i := range cp.Threema {
-		el, err := marshallIntegration(j, "threema", i, i.DisableResolveMessage)
+		el, err := marshallIntegration(j, threema.Type, i, i.DisableResolveMessage)
 		if err != nil {
 			errs = append(errs, err)
 		}
 		integration = append(integration, el)
 	}
 	for _, i := range cp.Victorops {
-		el, err := marshallIntegration(j, "victorops", i, i.DisableResolveMessage)
+		el, err := marshallIntegration(j, victorops.Type, i, i.DisableResolveMessage)
 		if err != nil {
 			errs = append(errs, err)
 		}
 		integration = append(integration, el)
 	}
 	for _, i := range cp.Webhook {
-		el, err := marshallIntegration(j, "webhook", i, i.DisableResolveMessage)
+		el, err := marshallIntegration(j, webhook.Type, i, i.DisableResolveMessage)
 		if err != nil {
 			errs = append(errs, err)
 		}
 		integration = append(integration, el)
 	}
 	for _, i := range cp.Wecom {
-		el, err := marshallIntegration(j, "wecom", i, i.DisableResolveMessage)
+		el, err := marshallIntegration(j, wecom.Type, i, i.DisableResolveMessage)
 		if err != nil {
 			errs = append(errs, err)
 		}
 		integration = append(integration, el)
 	}
 	for _, i := range cp.Webex {
-		el, err := marshallIntegration(j, "webex", i, i.DisableResolveMessage)
+		el, err := marshallIntegration(j, webex.Type, i, i.DisableResolveMessage)
 		if err != nil {
 			errs = append(errs, err)
 		}
@@ -253,118 +277,118 @@ func parseIntegration(json jsoniter.API, result *definitions.ContactPoint, recei
 	if disableResolveMessage { // populate only if true
 		disable = util.Pointer(disableResolveMessage)
 	}
-	switch strings.ToLower(receiverType) {
-	case "prometheus-alertmanager":
+	switch schema.IntegrationType(strings.ToLower(receiverType)) {
+	case alertmanager.Type:
 		integration := definitions.AlertmanagerIntegration{DisableResolveMessage: disable}
 		if err = json.Unmarshal(data, &integration); err == nil {
 			result.Alertmanager = append(result.Alertmanager, integration)
 		}
-	case "dingding":
+	case dingding.Type:
 		integration := definitions.DingdingIntegration{DisableResolveMessage: disable}
 		if err = json.Unmarshal(data, &integration); err == nil {
 			result.Dingding = append(result.Dingding, integration)
 		}
-	case "discord":
+	case discord.Type:
 		integration := definitions.DiscordIntegration{DisableResolveMessage: disable}
 		if err = json.Unmarshal(data, &integration); err == nil {
 			result.Discord = append(result.Discord, integration)
 		}
-	case "email":
+	case email.Type:
 		integration := definitions.EmailIntegration{DisableResolveMessage: disable}
 		if err = json.Unmarshal(data, &integration); err == nil {
 			result.Email = append(result.Email, integration)
 		}
-	case "googlechat":
+	case googlechat.Type:
 		integration := definitions.GooglechatIntegration{DisableResolveMessage: disable}
 		if err = json.Unmarshal(data, &integration); err == nil {
 			result.Googlechat = append(result.Googlechat, integration)
 		}
-	case "jira":
+	case jira.Type:
 		integration := definitions.JiraIntegration{DisableResolveMessage: disable}
 		if err = json.Unmarshal(data, &integration); err == nil {
 			result.Jira = append(result.Jira, integration)
 		}
-	case "kafka":
+	case kafka.Type:
 		integration := definitions.KafkaIntegration{DisableResolveMessage: disable}
 		if err = json.Unmarshal(data, &integration); err == nil {
 			result.Kafka = append(result.Kafka, integration)
 		}
-	case "line":
+	case line.Type:
 		integration := definitions.LineIntegration{DisableResolveMessage: disable}
 		if err = json.Unmarshal(data, &integration); err == nil {
 			result.Line = append(result.Line, integration)
 		}
-	case "mqtt":
+	case mqtt.Type:
 		integration := definitions.MqttIntegration{DisableResolveMessage: disable}
 		if err = json.Unmarshal(data, &integration); err == nil {
 			result.Mqtt = append(result.Mqtt, integration)
 		}
-	case "opsgenie":
+	case opsgenie.Type:
 		integration := definitions.OpsgenieIntegration{DisableResolveMessage: disable}
 		if err = json.Unmarshal(data, &integration); err == nil {
 			result.Opsgenie = append(result.Opsgenie, integration)
 		}
-	case "pagerduty":
+	case pagerduty.Type:
 		integration := definitions.PagerdutyIntegration{DisableResolveMessage: disable}
 		if err = json.Unmarshal(data, &integration); err == nil {
 			result.Pagerduty = append(result.Pagerduty, integration)
 		}
-	case "oncall":
+	case oncall.Type:
 		integration := definitions.OnCallIntegration{DisableResolveMessage: disable}
 		if err = json.Unmarshal(data, &integration); err == nil {
 			result.OnCall = append(result.OnCall, integration)
 		}
-	case "pushover":
+	case pushover.Type:
 		integration := definitions.PushoverIntegration{DisableResolveMessage: disable}
 		if err = json.Unmarshal(data, &integration); err == nil {
 			result.Pushover = append(result.Pushover, integration)
 		}
-	case "sensugo":
+	case sensugo.Type:
 		integration := definitions.SensugoIntegration{DisableResolveMessage: disable}
 		if err = json.Unmarshal(data, &integration); err == nil {
 			result.Sensugo = append(result.Sensugo, integration)
 		}
-	case "sns":
+	case sns.Type:
 		integration := definitions.SnsIntegration{DisableResolveMessage: disable}
 		if err = json.Unmarshal(data, &integration); err == nil {
 			result.Sns = append(result.Sns, integration)
 		}
-	case "slack":
+	case slack.Type:
 		integration := definitions.SlackIntegration{DisableResolveMessage: disable}
 		if err = json.Unmarshal(data, &integration); err == nil {
 			result.Slack = append(result.Slack, integration)
 		}
-	case "teams":
+	case teams.Type:
 		integration := definitions.TeamsIntegration{DisableResolveMessage: disable}
 		if err = json.Unmarshal(data, &integration); err == nil {
 			result.Teams = append(result.Teams, integration)
 		}
-	case "telegram":
+	case telegram.Type:
 		integration := definitions.TelegramIntegration{DisableResolveMessage: disable}
 		if err = json.Unmarshal(data, &integration); err == nil {
 			result.Telegram = append(result.Telegram, integration)
 		}
-	case "threema":
+	case threema.Type:
 		integration := definitions.ThreemaIntegration{DisableResolveMessage: disable}
 		if err = json.Unmarshal(data, &integration); err == nil {
 			result.Threema = append(result.Threema, integration)
 		}
-	case "victorops":
+	case victorops.Type:
 		integration := definitions.VictoropsIntegration{DisableResolveMessage: disable}
 		if err = json.Unmarshal(data, &integration); err == nil {
 			result.Victorops = append(result.Victorops, integration)
 		}
-	case "webhook":
+	case webhook.Type:
 		integration := definitions.WebhookIntegration{DisableResolveMessage: disable}
 		if err = json.Unmarshal(data, &integration); err == nil {
 			result.Webhook = append(result.Webhook, integration)
 		}
-	case "wecom":
+	case wecom.Type:
 		integration := definitions.WecomIntegration{DisableResolveMessage: disable}
 		if err = json.Unmarshal(data, &integration); err == nil {
 			result.Wecom = append(result.Wecom, integration)
 		}
-	case "webex":
+	case webex.Type:
 		integration := definitions.WebexIntegration{DisableResolveMessage: disable}
 		if err = json.Unmarshal(data, &integration); err == nil {
 			result.Webex = append(result.Webex, integration)

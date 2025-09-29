@@ -9,7 +9,12 @@ import (
 	"github.com/google/go-cmp/cmp"
 	alertingmodels "github.com/grafana/alerting/models"
 	"github.com/grafana/alerting/notify"
+	"github.com/grafana/alerting/notify/notifytest"
+	"github.com/grafana/alerting/receivers/mqtt"
+	"github.com/grafana/alerting/receivers/oncall"
+	"github.com/grafana/alerting/receivers/pushover"
 	receiversTesting "github.com/grafana/alerting/receivers/testing"
+	"github.com/grafana/alerting/receivers/webhook"
 	"github.com/stretchr/testify/require"
 
 	apicompat "github.com/grafana/grafana/pkg/services/ngalert/api/compat"
@@ -86,7 +91,7 @@ func TestContactPointFromContactPointExports(t *testing.T) {
 				"Metadata.Name",
 				"WecomConfigs.Settings.EndpointURL", // This field is not exposed to user
 			}
-			if integrationType != "webhook" {
+			if integrationType != webhook.Type {
 				// Many notifiers now support HTTPClientConfig but only Webhook currently has it enabled in schema.
 				// TODO: Remove this once HTTPClientConfig is added to other schemas.
 				pathFilters = append(pathFilters, "HTTPClientConfig")
@@ -112,7 +117,7 @@ func TestContactPointFromContactPointExports(t *testing.T) {
 			Name: "test",
 			Receivers: []definitions.ReceiverExport{
 				{
-					Type: "pushover",
+					Type: string(pushover.Type),
 					Settings: definitions.RawMessage(
 						`{
 						"priority": 1,
@@ -156,15 +161,15 @@ func TestContactPointFromContactPointExports(t *testing.T) {
 			Name: "test",
 			Receivers: []definitions.ReceiverExport{
 				{
-					Type:     "webhook",
+					Type:     string(webhook.Type),
 					Settings: definitions.RawMessage(`{ "maxAlerts" : "112" }`),
 				},
 				{
-					Type:     "webhook",
+					Type:     string(webhook.Type),
 					Settings: definitions.RawMessage(`{ "maxAlerts" : "test" }`),
 				},
 				{
-					Type:     "webhook",
+					Type:     string(webhook.Type),
 					Settings: definitions.RawMessage(`{ "maxAlerts" : null }`),
 				},
 			},
@@ -182,15 +187,15 @@ func TestContactPointFromContactPointExports(t *testing.T) {
 			Name: "test",
 			Receivers: []definitions.ReceiverExport{
 				{
-					Type:     "oncall",
+					Type:     string(oncall.Type),
 					Settings: definitions.RawMessage(`{ "maxAlerts" : "112" }`),
 				},
 				{
-					Type:     "oncall",
+					Type:     string(oncall.Type),
 					Settings: definitions.RawMessage(`{ "maxAlerts" : "test" }`),
 				},
 				{
-					Type:     "oncall",
+					Type:     string(oncall.Type),
 					Settings: definitions.RawMessage(`{ "maxAlerts" : null }`),
 				},
 			},
@@ -208,15 +213,15 @@ func TestContactPointFromContactPointExports(t *testing.T) {
 			Name: "test",
 			Receivers: []definitions.ReceiverExport{
 				{
-					Type:     "mqtt",
+					Type:     string(mqtt.Type),
 					Settings: definitions.RawMessage(`{ "qos" : "112" }`),
 				},
 				{
-					Type:     "mqtt",
+					Type:     string(mqtt.Type),
 					Settings: definitions.RawMessage(`{ "qos" : "test" }`),
 				},
 				{
-					Type:     "mqtt",
+					Type:     string(mqtt.Type),
 					Settings: definitions.RawMessage(`{ "qos" : null }`),
 				},
 			},
