@@ -1266,8 +1266,8 @@ func TestIntegrationCRUD(t *testing.T) {
 
 	var receiver *v0alpha1.Receiver
 	t.Run("should correctly persist all known integrations", func(t *testing.T) {
-		integrations := make([]v0alpha1.ReceiverIntegration, 0, len(notify.AllKnownConfigsForTesting))
-		keysIter := maps.Keys(notify.AllKnownConfigsForTesting)
+		integrations := make([]v0alpha1.ReceiverIntegration, 0, len(notifytest.AllKnownV1ConfigsForTesting))
+		keysIter := maps.Keys(notifytest.AllKnownV1ConfigsForTesting)
 		keys := slices.Collect(keysIter)
 		sort.Strings(keys)
 		for _, key := range keys {
@@ -1300,7 +1300,7 @@ func TestIntegrationCRUD(t *testing.T) {
 
 		export := legacyCli.ExportReceiverTyped(t, receiver.Spec.Title, true)
 		for _, integration := range export.Receivers {
-			expected := notify.AllKnownConfigsForTesting[strings.ToLower(integration.Type)] // to lower because there is LINE that is in different casing in API
+			expected := notifytest.AllKnownV1ConfigsForTesting[strings.ToLower(integration.Type)] // to lower because there is LINE that is in different casing in API
 			assert.JSONEqf(t, expected.Config, string(integration.Settings), "integration %s", integration.Type)
 		}
 	})
@@ -1313,7 +1313,7 @@ func TestIntegrationCRUD(t *testing.T) {
 			for _, integration := range get.Spec.Integrations {
 				integrationType := schema.IntegrationType(integration.Type)
 				t.Run(integration.Type, func(t *testing.T) {
-					expected := notify.AllKnownConfigsForTesting[strings.ToLower(integration.Type)]
+					expected := notifytest.AllKnownV1ConfigsForTesting[strings.ToLower(integration.Type)]
 					var fields map[string]any
 					require.NoError(t, json.Unmarshal([]byte(expected.Config), &fields))
 					typeSchema, ok := notify.GetSchemaVersionForIntegration(integrationType, schema.V1)
@@ -1336,7 +1336,7 @@ func TestIntegrationCRUD(t *testing.T) {
 	})
 
 	t.Run("should fail to persist receiver with invalid config", func(t *testing.T) {
-		keysIter := maps.Keys(notify.AllKnownConfigsForTesting)
+		keysIter := maps.Keys(notifytest.AllKnownV1ConfigsForTesting)
 		keys := slices.Collect(keysIter)
 		sort.Strings(keys)
 		for _, key := range keys {
@@ -1504,7 +1504,7 @@ func persistInitialConfig(t *testing.T, amConfig definitions.PostableUserConfig)
 }
 
 func createIntegration(t *testing.T, integrationType string) v0alpha1.ReceiverIntegration {
-	cfg, ok := notify.AllKnownConfigsForTesting[integrationType]
+	cfg, ok := notifytest.AllKnownV1ConfigsForTesting[integrationType]
 	require.Truef(t, ok, "no known config for integration type %s", integrationType)
 	return createIntegrationWithSettings(t, integrationType, "v1", cfg.Config)
 }
