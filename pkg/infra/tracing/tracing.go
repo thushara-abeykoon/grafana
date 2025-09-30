@@ -339,7 +339,8 @@ func (ots *TracingService) Run(ctx context.Context) error {
 	if err := ots.StartAsync(ctx); err != nil {
 		return err
 	}
-	return ots.AwaitTerminated(ctx)
+	stopCtx := context.Background()
+	return ots.AwaitTerminated(stopCtx)
 }
 
 func (ots *TracingService) Inject(ctx context.Context, header http.Header, _ trace.Span) {

@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	stopTimeout = 30 * time.Second
+	stopTimeout = 5 * time.Second
 )
 
 type ManagerAdapter struct {
