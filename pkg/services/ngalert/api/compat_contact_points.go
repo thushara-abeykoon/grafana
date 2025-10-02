@@ -277,7 +277,12 @@ func parseIntegration(json jsoniter.API, result *definitions.ContactPoint, recei
 	if disableResolveMessage { // populate only if true
 		disable = util.Pointer(disableResolveMessage)
 	}
-	switch schema.IntegrationType(strings.ToLower(receiverType)) {
+	t := schema.IntegrationType(strings.ToLower(receiverType))
+	// TODO look up for the receiver type in the schema registry
+	if strings.EqualFold(receiverType, string(line.Type)) {
+		t = line.Type
+	}
+	switch t {
 	case alertmanager.Type:
 		integration := definitions.AlertmanagerIntegration{DisableResolveMessage: disable}
 		if err = json.Unmarshal(data, &integration); err == nil {

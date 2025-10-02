@@ -2036,7 +2036,7 @@ func TestApiContactPointExportSnapshot(t *testing.T) {
 						for integrationType := range notifytest.AllKnownV1ConfigsForTesting {
 							integration := models.IntegrationGen(
 								models.IntegrationMuts.WithName(allIntegrationsName),
-								models.IntegrationMuts.WithUID(fmt.Sprintf("%s-uid", integrationType)),
+								models.IntegrationMuts.WithUID(fmt.Sprintf("%s-uid", strings.ToLower(string(integrationType)))),
 								models.IntegrationMuts.WithValidConfig(integrationType),
 							)()
 							integration.DisableResolveMessage = redacted
