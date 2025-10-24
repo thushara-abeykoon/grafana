@@ -218,22 +218,24 @@ export class InspectDataTab extends PureComponent<Props, State> {
   }
 
   renderActions(dataFrames: DataFrame[], hasLogs: boolean, hasTraces: boolean, hasServiceGraph: boolean) {
+    const isExportOption = config.csvExportOnly;
+
     return (
       <>
         <Button variant="primary" onClick={() => this.exportCsv(dataFrames, hasLogs)} size="sm">
           <Trans i18nKey="dashboard.inspect-data.download-csv">Download CSV</Trans>
         </Button>
-        {hasLogs && !config.exploreHideLogsDownload && (
+        {!isExportOption && hasLogs && !config.exploreHideLogsDownload && (
           <Button variant="primary" onClick={this.onExportLogsAsTxt} size="sm">
             <Trans i18nKey="dashboard.inspect-data.download-logs">Download logs</Trans>
           </Button>
         )}
-        {hasTraces && (
+        {!isExportOption && hasTraces && (
           <Button variant="primary" onClick={this.onExportTracesAsJson} size="sm">
             <Trans i18nKey="dashboard.inspect-data.download-traces">Download traces</Trans>
           </Button>
         )}
-        {hasServiceGraph && (
+        {!isExportOption && hasServiceGraph && (
           <Button variant="primary" onClick={this.onExportServiceGraph} size="sm">
             <Trans i18nKey="dashboard.inspect-data.download-service">Download service graph</Trans>
           </Button>

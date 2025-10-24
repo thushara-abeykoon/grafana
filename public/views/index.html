@@ -99,6 +99,47 @@
         color: #d8d9da;
       }
 
+      /* Ant Design Spin CSS */
+    .ant-spin {
+      color: #1890ff;
+      opacity: 0;
+      position: absolute;
+      transition: transform 0.3s cubic-bezier(0.78, 0.14, 0.15, 0.86);
+    }
+    .ant-spin-spinning {
+      position: static;
+      opacity: 1;
+    }
+    .ant-spin-dot {
+      position: relative;
+      display: inline-block;
+      font-size: 20px;
+      width: 1em;
+      height: 1em;
+    }
+    .ant-spin-dot-item {
+      position: absolute;
+      display: block;
+      width: 9px;
+      height: 9px;
+      background-color: #1890ff;
+      border-radius: 100%;
+      transform: scale(0.75);
+      transform-origin: 50% 50%;
+      opacity: 0.3;
+      animation: antSpinMove 1s infinite linear alternate;
+    }
+    .ant-spin-dot-item:nth-child(1) { top: 0; left: 0; }
+    .ant-spin-dot-item:nth-child(2) { top: 0; right: 0; animation-delay: 0.4s; }
+    .ant-spin-dot-item:nth-child(3) { right: 0; bottom: 0; animation-delay: 0.8s; }
+    .ant-spin-dot-item:nth-child(4) { bottom: 0; left: 0; animation-delay: 1.2s; }
+    .ant-spin-dot-spin {
+      transform: rotate(45deg);
+      animation: antRotate 1.2s infinite linear;
+    }
+      @keyframes antSpinMove { to { opacity: 1; } }
+      @keyframes antRotate { to { transform: rotate(405deg); } }
+
       @keyframes preloader-fade-in {
         0% {
           opacity: 0;
@@ -203,11 +244,20 @@
     </style>
 
     <div class="preloader">
-      <div class="preloader__enter">
+      <!-- Previous Loading Icon Based Bouncing Loading -->
+      <!-- <div class="preloader__enter">
         <div class="preloader__bounce">
           <div class="preloader__logo" aria-live="polite" role="status" aria-label="Loading Grafana"></div>
         </div>
-      </div>
+      </div> -->
+      <div class="ant-spin ant-spin-spinning">
+      <span class="ant-spin-dot ant-spin-dot-spin">
+        <i class="ant-spin-dot-item"></i>
+        <i class="ant-spin-dot-item"></i>
+        <i class="ant-spin-dot-item"></i>
+        <i class="ant-spin-dot-item"></i>
+      </span>
+    </div>
       <div class="preloader__text preloader__text--fail">
         <main>
           <h1>If you're seeing this Grafana has failed to load its application files</h1>

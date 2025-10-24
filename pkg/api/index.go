@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"html/template"
 
 	claims "github.com/grafana/authlib/types"
 	"github.com/grafana/grafana/pkg/api/dtos"
@@ -160,14 +161,14 @@ func (hs *HTTPServer) setIndexViewData(c *contextmodel.ReqContext) (*dtos.IndexV
 		BuildCommit:                         setting.BuildCommit,
 		NewGrafanaVersion:                   hs.grafanaUpdateChecker.LatestVersion(),
 		NewGrafanaVersionExists:             hs.grafanaUpdateChecker.UpdateAvailable(),
-		AppName:                             setting.ApplicationName,
+		AppName:                             hs.Cfg.AppTitle,
 		AppNameBodyClass:                    "app-grafana",
-		FavIcon:                             "public/img/fav32.png",
-		AppleTouchIcon:                      "public/img/apple-touch-icon.png",
-		AppTitle:                            "Grafana",
+		FavIcon:                             template.URL(hs.Cfg.FavIcon),
+		AppleTouchIcon:                      template.URL(hs.Cfg.LogoIcon),
+		AppTitle:                            hs.Cfg.AppTitle,
 		NavTree:                             navTree,
 		Nonce:                               c.RequestNonce,
-		LoadingLogo:                         "public/img/grafana_icon.svg",
+		LoadingLogo:                         template.URL(hs.Cfg.LogoIcon),
 		IsDevelopmentEnv:                    hs.Cfg.Env == setting.Dev,
 		Assets:                              assets,
 	}

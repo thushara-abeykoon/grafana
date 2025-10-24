@@ -2884,14 +2884,14 @@
       "title-complete-git-hub-comment-clipboard": "Copy a complete GitHub comment to the clipboard"
     },
     "inspect": {
-      "data-tab": "Data",
+      "data-tab": "CSV",
       "error-tab": "Error",
       "json-tab": "JSON",
       "meta-tab": "Meta data",
       "query-tab": "Query",
       "stats-tab": "Stats",
       "subtitle": "{{queryCount}} queries with total query time of {{formatted}}",
-      "title": "Inspect: {{panelTitle}}"
+      "title": "Export: {{panelTitle}}"
     },
     "inspect-data": {
       "data-options": "Data options",
@@ -6126,8 +6126,8 @@
       "explore": "Explore",
       "get-help": "Get help",
       "hide-legend": "Hide legend",
-      "inspect": "Inspect",
-      "inspect-data": "Data",
+      "inspect": "Export",
+      "inspect-data": "CSV",
       "inspect-json": "Panel JSON",
       "more": "More...",
       "new-alert-rule": "New alert rule",

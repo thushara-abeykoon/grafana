@@ -63,6 +63,9 @@ export class GrafanaBootConfig implements GrafanaConfig {
   apps: Record<string, AppPluginConfig> = {};
   auth: AuthSettings = {};
   minRefreshInterval = '';
+  logoIcon:string = 'public/img/grafana_icon.svg';
+  csvExportOnly: boolean = false;
+  appTitle:string = 'Grafana';
   appUrl = '';
   appSubUrl = '';
   namespace = 'default';
@@ -224,6 +227,7 @@ export class GrafanaBootConfig implements GrafanaConfig {
       panels: {},
       playlist_timespan: '1m',
       unsaved_changes_warning: true,
+      appTitle: 'Grafana',
       appUrl: '',
       appSubUrl: '',
       buildInfo: {

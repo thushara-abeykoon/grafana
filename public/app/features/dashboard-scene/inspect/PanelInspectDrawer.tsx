@@ -27,6 +27,7 @@ import { InspectMetaDataTab } from './InspectMetaDataTab';
 import { InspectQueryTab } from './InspectQueryTab';
 import { InspectStatsTab } from './InspectStatsTab';
 import { SceneInspectTab } from './types';
+import grafanaConfig from 'app/core/config';
 
 interface PanelInspectDrawerState extends SceneObjectState {
   tabs?: SceneInspectTab[];
@@ -55,6 +56,7 @@ export class PanelInspectDrawer extends SceneObjectBase<PanelInspectDrawerState>
     const panelRef = this.state.panelRef;
     const plugin = panelRef.resolve()?.getPlugin();
     const tabs: SceneInspectTab[] = [];
+    const isExportOption = grafanaConfig.csvExportOnly;
 
     if (!plugin) {
       if (retry < 2000) {
@@ -69,16 +71,18 @@ export class PanelInspectDrawer extends SceneObjectBase<PanelInspectDrawerState>
         const data = sceneGraph.getData(panelRef.resolve());
 
         tabs.push(new InspectDataTab({ panelRef }));
-        tabs.push(new InspectStatsTab({ panelRef }));
-        tabs.push(new InspectQueryTab({ panelRef }));
 
-        const dsWithInspector = await getDataSourceWithInspector(data.state.data);
-        if (dsWithInspector) {
-          tabs.push(new InspectMetaDataTab({ panelRef, dataSource: dsWithInspector }));
+        if (!isExportOption) {
+          tabs.push(new InspectStatsTab({ panelRef }));
+          tabs.push(new InspectQueryTab({ panelRef }));
+
+          const dsWithInspector = await getDataSourceWithInspector(data.state.data);
+          if (dsWithInspector) {
+            tabs.push(new InspectMetaDataTab({ panelRef, dataSource: dsWithInspector }));
+          }
+          tabs.push(new InspectJsonTab({ panelRef, onClose: this.onClose }));
         }
       }
-
-      tabs.push(new InspectJsonTab({ panelRef, onClose: this.onClose }));
     }
 
     this.setState({ tabs });
@@ -87,9 +91,9 @@ export class PanelInspectDrawer extends SceneObjectBase<PanelInspectDrawerState>
   getDrawerTitle() {
     const panel = this.state.panelRef?.resolve();
     if (panel) {
-      return sceneGraph.interpolate(panel, `Inspect: ${panel.state.title}`);
+      return sceneGraph.interpolate(panel, `Export: ${panel.state.title}`);
     }
-    return `Inspect panel`;
+    return `Export panel`;
   }
 
   onClose = () => {

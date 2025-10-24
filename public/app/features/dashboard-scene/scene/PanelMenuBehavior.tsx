@@ -84,7 +84,9 @@ export function panelMenuBehavior(menu: VizPanelMenu) {
     }
 
     const isEditingPanel = Boolean(dashboard.state.editPanel);
-    if (!isEditingPanel) {
+    const isAdminUser =
+      dashboard.canEditDashboard() && dashboard.state.editable && !isReadOnlyRepeat && !isEditingPanel;
+    if (isAdminUser) {
       items.push({
         text: t('panel.header-menu.view', `View`),
         iconClassName: 'eye',
@@ -93,7 +95,7 @@ export function panelMenuBehavior(menu: VizPanelMenu) {
       });
     }
 
-    if (dashboard.canEditDashboard() && dashboard.state.editable && !isReadOnlyRepeat && !isEditingPanel) {
+    if (isAdminUser) {
       // We could check isEditing here but I kind of think this should always be in the menu,
       // and going into panel edit should make the dashboard go into edit mode is it's not already
       items.push({
@@ -168,15 +170,17 @@ export function panelMenuBehavior(menu: VizPanelMenu) {
         });
       }
 
-      items.push({
-        type: 'submenu',
-        text: t('panel.header-menu.share', 'Share'),
-        iconClassName: 'share-alt',
-        subMenu,
-        onClick: (e) => {
-          e.preventDefault();
-        },
-      });
+      if (isAdminUser) {
+        items.push({
+          type: 'submenu',
+          text: t('panel.header-menu.share', 'Share'),
+          iconClassName: 'share-alt',
+          subMenu,
+          onClick: (e) => {
+            e.preventDefault();
+          },
+        });
+      }
     } else {
       items.push({
         text: t('panel.header-menu.share', 'Share'),
@@ -346,7 +350,7 @@ export function panelMenuBehavior(menu: VizPanelMenu) {
       }
     }
 
-    if (moreSubMenu.length) {
+    if (isAdminUser && moreSubMenu.length) {
       items.push({
         type: 'submenu',
         text: t('panel.header-menu.more', `More...`),
@@ -401,6 +405,8 @@ function getInspectMenuItem(
 ): PanelMenuItem {
   const inspectSubMenu: PanelMenuItem[] = [];
 
+  const isCSVExportOnly = config.csvExportOnly;
+
   if (plugin && !plugin.meta.skipDataQuery) {
     inspectSubMenu.push({
       text: t('panel.header-menu.inspect-data', `Data`),
@@ -438,11 +444,14 @@ function getInspectMenuItem(
     shortcut: 'i',
     href: getInspectUrl(panel),
     onClick: (e) => {
-      if (!e.isDefaultPrevented()) {
-        locationService.partial({ inspect: panel.state.key, inspectTab: InspectTab.Data });
+      if (isCSVExportOnly) {
+        e.preventDefault();
+      } else if (e.isDefaultPrevented()) {
+        return;
       }
+      locationService.partial({ inspect: panel.state.key, inspectTab: InspectTab.Data });
     },
-    subMenu: inspectSubMenu.length > 0 ? inspectSubMenu : undefined,
+    subMenu: !isCSVExportOnly && inspectSubMenu.length > 0 ? inspectSubMenu : undefined,
   };
 }
 

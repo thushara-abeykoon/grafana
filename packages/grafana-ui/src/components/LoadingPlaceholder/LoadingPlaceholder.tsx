@@ -1,11 +1,11 @@
 import { css, cx } from '@emotion/css';
-import { HTMLAttributes } from 'react';
 import * as React from 'react';
+import { HTMLAttributes } from 'react';
 
 import { GrafanaTheme2 } from '@grafana/data';
 
+import CustomSpinner from '../../../../../public/app/core/components/CustomSpinner/CustomSpinner';
 import { useStyles2 } from '../../themes';
-import { Spinner } from '../Spinner/Spinner';
 
 /**
  * @public
@@ -21,7 +21,7 @@ export const LoadingPlaceholder = ({ text, className, ...rest }: LoadingPlacehol
   const styles = useStyles2(getStyles);
   return (
     <div className={cx(styles.container, className)} {...rest}>
-      {text} <Spinner inline={true} />
+      <CustomSpinner />
     </div>
   );
 };

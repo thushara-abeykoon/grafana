@@ -3,14 +3,16 @@ import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { useStyles2 } from '@grafana/ui';
 
-import { BouncingLoader } from '../components/BouncingLoader/BouncingLoader';
+// import { BouncingLoader } from '../components/BouncingLoader/BouncingLoader';
+import CustomSpinner from '../components/CustomSpinner/CustomSpinner';
 
 export function GrafanaRouteLoading() {
   const styles = useStyles2(getStyles);
 
   return (
     <div className={styles.loadingPage}>
-      <BouncingLoader />
+      {/* <BouncingLoader /> */}
+      <CustomSpinner />
     </div>
   );
 }

@@ -88,6 +88,11 @@ type Cfg struct {
 	appliedCommandLineProperties []string
 	appliedEnvOverrides          []string
 
+	AppTitle		  string
+	FavIcon           string
+	LogoIcon          string
+	CSVExportOnly     bool
+
 	// HTTP Server Settings
 	CertFile          string
 	KeyFile           string
@@ -1111,6 +1116,12 @@ func (cfg *Cfg) parseINIFile(iniFile *ini.File) error {
 		cfg.Target = util.SplitString(Target)
 	}
 	cfg.Env = valueAsString(iniFile.Section(""), "app_mode", "development")
+	
+	cfg.AppTitle = valueAsString(iniFile.Section("custom_config"), "app_title", "Grafana")
+	cfg.FavIcon = valueAsString(iniFile.Section("custom_config"), "fav_icon", "public/img/fav32.png")
+	cfg.LogoIcon = valueAsString(iniFile.Section("custom_config"), "logo_icon", "public/img/apple-touch-icon.png")
+	cfg.CSVExportOnly = iniFile.Section("custom_config").Key("csv_export_only").MustBool(false);
+
 	cfg.StackID = valueAsString(iniFile.Section("environment"), "stack_id", "")
 	cfg.Slug = valueAsString(iniFile.Section("environment"), "stack_slug", "")
 	cfg.LocalFileSystemAvailable = iniFile.Section("environment").Key("local_file_system_available").MustBool(true)
